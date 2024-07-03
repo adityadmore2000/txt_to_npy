@@ -96,9 +96,10 @@ def from_CCannotation_to_xyzrgbl(file_name:str, output_dir:str, separator = ",",
         return False        
     
     
-def convert_files(input_dir:str,output_dir:str, is_annotated =True,separator:str=",",drop_color=False)->None:
+def convert_files(input_dir:str,output_dir:str, is_annotated =True,separator:str=",",drop_color=False)->bool:
     files = glob.glob(os.path.join(input_dir, "*"+".txt"))
     os.makedirs(output_dir,exist_ok=True)
+    some_error = False
     if is_annotated==True:
         convert = from_CCannotation_to_xyzrgbl
     else:
@@ -109,9 +110,10 @@ def convert_files(input_dir:str,output_dir:str, is_annotated =True,separator:str
             ng_files.append(f)
     if len(ng_files) !=0:
         print("!!! Some files failed to convert. !!!")
+        some_error = True
         for f in ng_files:
             print(f)
-    return 
+    return some_error
     
 def from_xyzrgb_to_xyzrgbl(file_name:str, output_dir:str, separator = ",",drop_color=False)->bool:
     """_summary_
@@ -132,7 +134,7 @@ def from_xyzrgb_to_xyzrgbl(file_name:str, output_dir:str, separator = ",",drop_c
             pcs.iloc[:,3:6]=0
         
         output_file_name = os.path.join(output_dir,os.path.basename(os.path.splitext(file_name)[0])+"_test.npy")
-        np.save(output_file_name, pcs.values)    
+        np.save(output_file_name, pcs.values)
         return True
     except Exception as e:
         logger.debug(e)
